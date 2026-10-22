@@ -1,0 +1,19 @@
+[project]
+name = "pmr-cache"
+version = "0.1.0"
+description = "Build a local SQLite cache of the Physiome Model Repository (PMR) exposures"
+readme = "README.md"
+authors = [
+    { name = "David Nickerson", email = "david.nickerson@gmail.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "requests>=2.31",
+]
+
+[project.scripts]
+pmr-cache = "pmr_cache.cli:main"
+
+[build-system]
+requires = ["uv_build>=0.10.3,<0.11.0"]
+build-backend = "uv_build"
