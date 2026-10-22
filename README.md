@@ -106,6 +106,25 @@ npm install
 npm run dev        # http://localhost:5173
 npm run build      # static site in dashboard/dist (serve it over http, not file://)
 ```
+### Publishing on GitHub Pages
+
+[.github/workflows/pages.yml](.github/workflows/pages.yml) builds the dashboard
+and deploys it to GitHub Pages on every push to `main` that touches
+`dashboard/`. One-time setup: in the GitHub repo go to **Settings > Pages** and
+set **Source** to **GitHub Actions**.
+
+The published site shows whatever is committed in `dashboard/public/data`, so
+to update it:
+
+```powershell
+uv run pmr-cache dashboard-data
+git add dashboard/public/data
+git commit -m "Update dashboard data"
+git push
+```
+
+`dashboard-data` removes tracebacks from the run report so local file paths are
+not published. The data is a snapshot, not a live view of the cache.
 ## License
 
 Licensed under the Apache License 2.0 - see [LICENSE](LICENSE).

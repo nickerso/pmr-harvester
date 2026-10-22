@@ -1,5 +1,5 @@
 __pycache__/
 .venv/
 *.sqlite
-opencor_links.json
-opencor_run_report.*
+/opencor_links.json
+/opencor_run_report.*

@@ -367,11 +367,19 @@ def cmd_dashboard_data(args):
     (out / "summary.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
     print(f"Wrote {out / 'summary.json'}")
     for src in (args.links, args.report):
-        if Path(src).exists():
-            shutil.copyfile(src, out / Path(src).name)
-            print(f"Copied {src} -> {out}")
-        else:
+        if not Path(src).exists():
             print(f"Skipped {src} (not found)")
+            continue
+        dest = out / Path(src).name
+        if Path(src).name == Path(args.report).name:
+            # Tracebacks contain local file paths; the exported data may be published.
+            report = json.loads(Path(src).read_text(encoding="utf-8"))
+            for r in report.get("results", []):
+                r.pop("traceback", None)
+            dest.write_text(json.dumps(report, indent=1), encoding="utf-8")
+        else:
+            shutil.copyfile(src, dest)
+        print(f"Copied {src} -> {dest}")
 
 
 def main():

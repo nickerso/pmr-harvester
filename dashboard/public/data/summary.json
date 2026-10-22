@@ -1,0 +1,177 @@
+{
+  "generated": "2026-10-22T19:23:54.258951+00:00",
+  "metrics": [
+    {
+      "label": "Published exposures",
+      "value": 1108
+    },
+    {
+      "label": "Exposure files (all)",
+      "value": 1526
+    },
+    {
+      "label": "CellML exposure files",
+      "value": 1184
+    },
+    {
+      "label": "Distinct CellML filenames",
+      "value": 1000
+    },
+    {
+      "label": "SED-ML exposure files",
+      "value": 11
+    },
+    {
+      "label": "Exposures with >=1 CellML file",
+      "value": 734
+    },
+    {
+      "label": "Exposures with >=1 SED-ML file",
+      "value": 9
+    },
+    {
+      "label": "Exposures with CellML AND SED-ML",
+      "value": 7
+    },
+    {
+      "label": "Links mentioning OpenCOR",
+      "value": 1176
+    }
+  ],
+  "file_kinds": [
+    {
+      "name": "cellml",
+      "count": 1184
+    },
+    {
+      "name": "other",
+      "count": 330
+    },
+    {
+      "name": "sedml",
+      "count": 11
+    },
+    {
+      "name": "omex",
+      "count": 1
+    }
+  ],
+  "extensions": [
+    {
+      "name": "cellml",
+      "count": 1184
+    },
+    {
+      "name": "neon",
+      "count": 171
+    },
+    {
+      "name": "png",
+      "count": 75
+    },
+    {
+      "name": "json",
+      "count": 50
+    },
+    {
+      "name": "xml",
+      "count": 11
+    },
+    {
+      "name": "sedml",
+      "count": 9
+    },
+    {
+      "name": "rdf",
+      "count": 6
+    },
+    {
+      "name": "py",
+      "count": 6
+    },
+    {
+      "name": "svg",
+      "count": 4
+    },
+    {
+      "name": "html",
+      "count": 2
+    },
+    {
+      "name": "exf",
+      "count": 2
+    },
+    {
+      "name": "so",
+      "count": 1
+    },
+    {
+      "name": "omex",
+      "count": 1
+    },
+    {
+      "name": "jpg",
+      "count": 1
+    },
+    {
+      "name": "jpeg",
+      "count": 1
+    }
+  ],
+  "link_rels": [
+    {
+      "name": "section",
+      "count": 10851
+    },
+    {
+      "name": "via",
+      "count": 4158
+    },
+    {
+      "name": "bookmark",
+      "count": 1530
+    }
+  ],
+  "files_per_exposure": [
+    {
+      "name": "1",
+      "count": 726
+    },
+    {
+      "name": "2",
+      "count": 153
+    },
+    {
+      "name": "3",
+      "count": 53
+    },
+    {
+      "name": "4",
+      "count": 16
+    },
+    {
+      "name": "5",
+      "count": 4
+    },
+    {
+      "name": "6",
+      "count": 5
+    },
+    {
+      "name": "7",
+      "count": 7
+    },
+    {
+      "name": "8",
+      "count": 2
+    },
+    {
+      "name": "9",
+      "count": 2
+    },
+    {
+      "name": "10",
+      "count": 11
+    }
+  ]
+}
