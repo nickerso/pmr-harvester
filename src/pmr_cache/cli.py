@@ -15,6 +15,7 @@ Usage:
   python pmr_cache.py harvest --no-files   # exposures only (faster)
   python pmr_cache.py rebuild              # re-derive tables from cache
   python pmr_cache.py analyse              # summary statistics
+  python pmr_cache.py opencor-links -o opencor_links.json   # list OpenCOR links
   sqlite3 pmr_cache.sqlite                 # ...then query freely
 """
 import argparse
@@ -36,6 +37,7 @@ HEADERS = {
     "User-Agent": "pmr-cache/0.1 (research harvesting script)",
 }
 DEFAULT_DB = "pmr_cache.sqlite"
+DEFAULT_OPENCOR_LINKS = "opencor_links.json"
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS responses (
@@ -305,6 +307,37 @@ def cmd_analyse(args, db=None):
         print(f"  {str(rel):12s} {n}")
 
 
+OPENCOR_SCHEME = "opencor://openFile/"
+
+
+def cmd_opencor_links(args, db=None):
+    """Write every link mentioning OpenCOR to a JSON file."""
+    db = db or open_db(args.db)
+    rows = db.execute("""
+        SELECT l.source_url, l.href, l.prompt,
+               ef.exposure_url, ef.filename, e.title
+        FROM links l
+        LEFT JOIN exposure_files ef ON ef.url = l.source_url
+        LEFT JOIN exposures e ON e.url = COALESCE(ef.exposure_url, l.source_url)
+        WHERE l.prompt LIKE '%OpenCOR%' OR l.href LIKE '%opencor%'
+        ORDER BY ef.exposure_url, l.source_url, l.href""").fetchall()
+    records = []
+    for source_url, href, prompt, exp_url, filename, title in rows:
+        file_url = href[len(OPENCOR_SCHEME):] if href.startswith(OPENCOR_SCHEME) else None
+        records.append({
+            "exposure_url": exp_url or source_url,
+            "exposure_title": title,
+            "source_page": source_url,
+            "filename": filename,
+            "prompt": prompt,
+            "opencor_url": href,
+            "file_url": file_url,
+        })
+    with open(args.output, "w", encoding="utf-8") as f:
+        json.dump(records, f, indent=2, ensure_ascii=False)
+    print(f"Wrote {len(records)} OpenCOR links to {args.output}")
+
+
 def main():
     p = argparse.ArgumentParser(description=__doc__,
                                 formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -324,6 +357,12 @@ def main():
 
     sub.add_parser("rebuild", help="re-derive tables from cache").set_defaults(func=cmd_rebuild)
     sub.add_parser("analyse", help="print summary stats").set_defaults(func=cmd_analyse)
+
+    o = sub.add_parser("opencor-links",
+                       help="save a JSON listing of the 'Launch with OpenCOR' links")
+    o.add_argument("-o", "--output", default=DEFAULT_OPENCOR_LINKS,
+                   help=f"JSON file to write (default: {DEFAULT_OPENCOR_LINKS})")
+    o.set_defaults(func=cmd_opencor_links)
 
     args = p.parse_args()
     args.func(args)
