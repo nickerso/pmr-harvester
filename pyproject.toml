@@ -3,6 +3,8 @@ name = "pmr-cache"
 version = "0.1.0"
 description = "Build a local SQLite cache of the Physiome Model Repository (PMR) exposures"
 readme = "README.md"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
 authors = [
     { name = "David Nickerson", email = "david.nickerson@gmail.com" }
 ]

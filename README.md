@@ -80,3 +80,8 @@ Options: `-i/--input` (default `opencor_links.json`), `-o/--output` (default
 `opencor_run_report.json`; a `.csv` is written alongside), `--limit N`, and
 `--resume` (skip URLs already in the report). The report is rewritten after each
 link, so it survives a crash or a model that needs to be killed.
+
+## License
+
+Licensed under the Apache License 2.0 - see [LICENSE](LICENSE).
+
