@@ -61,3 +61,22 @@ Reports the total number of links, the number of unique `opencor_url` values,
 a count of each `source_page` file type, and a count of each `opencor_url` file
 type for links whose `source_page` is a CellML model.
 
+## Run the links in OpenCOR
+
+[scripts/opencor_run_links.py](scripts/opencor_run_links.py) is a standalone
+script (it is not part of the uv project) that must be run with OpenCOR's own
+Python interpreter, since it uses OpenCOR's `opencor` module. For each distinct
+direct URL in `opencor_links.json` (taken from the `opencor://openFile/...`
+link) it opens the simulation, checks it is valid, runs it, and records whether
+it loaded and whether it ran (produced results).
+
+```powershell
+# from this folder; adjust the path to your OpenCOR install
+& "C:\Program Files\OpenCOR\OpenCOR.com" -c PythonShell::python scripts\opencor_run_links.py --limit 5
+& "C:\Program Files\OpenCOR\OpenCOR.com" -c PythonShell::python scripts\opencor_run_links.py
+```
+
+Options: `-i/--input` (default `opencor_links.json`), `-o/--output` (default
+`opencor_run_report.json`; a `.csv` is written alongside), `--limit N`, and
+`--resume` (skip URLs already in the report). The report is rewritten after each
+link, so it survives a crash or a model that needs to be killed.
