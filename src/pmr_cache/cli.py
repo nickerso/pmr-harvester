@@ -20,12 +20,14 @@ Usage:
 """
 import argparse
 import json
+import shutil
 import sqlite3
 import sys
 import threading
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone
+from pathlib import Path
 from urllib.parse import urlparse, unquote
 
 import requests
@@ -338,6 +340,40 @@ def cmd_opencor_links(args, db=None):
     print(f"Wrote {len(records)} OpenCOR links to {args.output}")
 
 
+DASHBOARD_DATA_DIR = "dashboard/public/data"
+
+
+def cmd_dashboard_data(args):
+    """Export the cache summary and copy the OpenCOR JSON files for the dashboard."""
+    db = open_db(args.db)
+    out = Path(args.out)
+    out.mkdir(parents=True, exist_ok=True)
+    one = lambda sql: db.execute(sql).fetchone()[0]
+    summary = {
+        "generated": datetime.now(timezone.utc).isoformat(),
+        "metrics": [{"label": label, "value": one(sql)} for label, sql in SUMMARY_QUERIES],
+        "file_kinds": [{"name": k, "count": n} for k, n in db.execute(
+            "SELECT kind, COUNT(*) FROM exposure_files GROUP BY kind ORDER BY 2 DESC")],
+        "extensions": [{"name": e or "(none)", "count": n} for e, n in db.execute(
+            "SELECT extension, COUNT(*) FROM exposure_files GROUP BY extension "
+            "ORDER BY 2 DESC LIMIT 15")],
+        "link_rels": [{"name": str(r), "count": n} for r, n in db.execute(
+            "SELECT rel, COUNT(*) FROM links GROUP BY rel ORDER BY 2 DESC LIMIT 10")],
+        "files_per_exposure": [{"name": str(k), "count": n} for k, n in db.execute("""
+            SELECT MIN(c, 10), COUNT(*) FROM (
+              SELECT COUNT(*) AS c FROM exposure_files GROUP BY exposure_url)
+            GROUP BY 1 ORDER BY 1""")],
+    }
+    (out / "summary.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
+    print(f"Wrote {out / 'summary.json'}")
+    for src in (args.links, args.report):
+        if Path(src).exists():
+            shutil.copyfile(src, out / Path(src).name)
+            print(f"Copied {src} -> {out}")
+        else:
+            print(f"Skipped {src} (not found)")
+
+
 def main():
     p = argparse.ArgumentParser(description=__doc__,
                                 formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -363,6 +399,16 @@ def main():
     o.add_argument("-o", "--output", default=DEFAULT_OPENCOR_LINKS,
                    help=f"JSON file to write (default: {DEFAULT_OPENCOR_LINKS})")
     o.set_defaults(func=cmd_opencor_links)
+
+    d = sub.add_parser("dashboard-data",
+                       help="export the JSON data files used by the web dashboard")
+    d.add_argument("--out", default=DASHBOARD_DATA_DIR,
+                   help=f"output directory (default: {DASHBOARD_DATA_DIR})")
+    d.add_argument("--links", default=DEFAULT_OPENCOR_LINKS,
+                   help="OpenCOR links JSON to copy (default: %(default)s)")
+    d.add_argument("--report", default="opencor_run_report.json",
+                   help="OpenCOR run report JSON to copy (default: %(default)s)")
+    d.set_defaults(func=cmd_dashboard_data)
 
     args = p.parse_args()
     args.func(args)

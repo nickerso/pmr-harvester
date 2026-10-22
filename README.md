@@ -81,6 +81,31 @@ Options: `-i/--input` (default `opencor_links.json`), `-o/--output` (default
 `--resume` (skip URLs already in the report). The report is rewritten after each
 link, so it survives a crash or a model that needs to be killed.
 
+## Web dashboard
+
+A Vue 3 + Vite app in [dashboard/](dashboard) for exploring the results. It has
+three tabs:
+
+- **Exposure summary** - counts of exposures, files and file kinds from the cache.
+- **OpenCOR links** - summary of the links analysis, with presets and filters
+  (e.g. CellML source with a different file type in `opencor_url`, or any
+  non-CellML source), search, and a sortable table.
+- **OpenCOR run results** - loaded/ran/failed counts, filters by status, file
+  type and problem, a sortable table, a detail panel per file, and a list of
+  every distinct problem with the files affected by it.
+
+The dashboard is static and reads JSON files from `dashboard/public/data`, so
+generate them first (this re-exports from the SQLite cache and copies
+`opencor_links.json` and `opencor_run_report.json`, so re-run it after any
+update). Requires [Node.js](https://nodejs.org/).
+
+```powershell
+uv run pmr-cache dashboard-data
+cd dashboard
+npm install
+npm run dev        # http://localhost:5173
+npm run build      # static site in dashboard/dist (serve it over http, not file://)
+```
 ## License
 
 Licensed under the Apache License 2.0 - see [LICENSE](LICENSE).
